@@ -173,7 +173,6 @@ $upcomingCustomEvents = array_slice($upcomingCustomEvents, 1);
 
     <script src="main.js"></script>
     <script>
-        // Create an array of image paths from PHP (latest to earliest)
         const allImages = [
             <?php
             foreach ($allImages as $image) {
@@ -185,29 +184,29 @@ $upcomingCustomEvents = array_slice($upcomingCustomEvents, 1);
         let currentImageIndex = 0;
 
         function showNextImage() {
-            // Get the slideshow container
+
             const slideshowContainer = document.getElementById('gallerySlideshow');
             const gallerySlideshow = document.getElementById('gallerySlideshow');
 
-            // Clear any existing images
+
             slideshowContainer.innerHTML = "";
 
-            // Create a new image element
+
             const img = document.createElement('img');
             img.src = allImages[currentImageIndex];
             img.alt = "Event Photo";
 
-            // Append the image to the container
+
             gallerySlideshow.appendChild(img);
 
-            // Move to the next image, and loop back to the first if we're at the end
+
             currentImageIndex = (currentImageIndex + 1) % allImages.length;
         }
 
-        // Show the first image immediately
+
         showNextImage();
 
-        // Automatically switch images every 3 seconds
+
         setInterval(showNextImage, 3000);
     </script>
 </body>

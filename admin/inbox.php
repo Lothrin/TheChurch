@@ -61,7 +61,7 @@ $messages = getAll('contact_messages');
                                 <?php if (!$message['is_read']): ?>
                                     <span class="unread-indicator">Unread</span>
                                 <?php endif; ?>
-                                <a href="delete_message.php?id=<?= $message['id'] ?>" class="delete-message-btn" onclick="return confirm('Are you sure you want to delete this message?');">Delete</a>
+                                <a href="crud/delete_record.php?table=contact_messages&id=<?= $message['id'] ?>" class="delete-message-btn" onclick="return confirm('Are you sure you want to delete this message?');">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

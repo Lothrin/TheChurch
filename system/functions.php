@@ -3,18 +3,63 @@ $userId = "";
 $currentDate = getCurrentDate();
 
 
-function cleanInput($input, $connect)
+function cleanInput($input, $connect, $type = 'general')
 {
     $data = trim($input);
     $data = strip_tags($data);
     $data = htmlspecialchars_decode($data);
-    return mysqli_real_escape_string($connect, $data);
+
+    $data = mysqli_real_escape_string($connect, $data);
+
+    switch ($type) {
+        case 'email':
+            if (!filter_var($data, FILTER_VALIDATE_EMAIL)) {
+                return ''; // or an error
+            }
+            break;
+        case 'phone':
+
+            if (!preg_match('/^[0-9\s\-\+]+$/', $data)) {
+                return ''; // or an error
+            }
+            break;
+        case 'date':
+
+            $d = DateTime::createFromFormat('Y-m-d', $data);
+            if ($d && $d->format('Y-m-d') === $data) {
+                return $data;
+            }
+            return ''; // or an error
+        case 'time':
+
+            if (!preg_match('/^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$/', $data)) {
+                return ''; // or an error
+            }
+            break;
+        case 'number':
+
+            if (!is_numeric($data)) {
+                return ''; // or an error
+            }
+            break;
+        case 'general':
+        default:
+
+            break;
+    }
+
+    return $data;
 }
+
 
 
 function getCurrentDate()
 {
     return date('Y-m-d');
+}
+function formatEventDate($date)
+{
+    return date('F j, Y', strtotime($date));
 }
 
 
@@ -25,44 +70,12 @@ function getFirstImage($imageField)
     return (!empty($firstImage) && file_exists("assets/event-images/" . $firstImage)) ? $firstImage : 'placeholder.jpg';
 }
 
-
 function getEventImages($imageString)
 {
     $images = explode(",", $imageString);
     return array_slice($images, 1);
 }
 
-
-function isPastEvent($eventDate)
-{
-    return $eventDate < getCurrentDate();
-}
-
-
-function formatEventDate($date)
-{
-    return date('F j, Y', strtotime($date));
-}
-
-
-function showDetailsPage($tableName, $id)
-{
-    global $connect;
-    $sql = "SELECT * FROM $tableName WHERE id = $id";
-    $result = mysqli_query($connect, $sql);
-
-    return (mysqli_num_rows($result) > 0) ? mysqli_fetch_assoc($result) : null;
-}
-
-
-function getAll($tableName)
-{
-    global $connect;
-    $sql = "SELECT * FROM $tableName";
-    $result = mysqli_query($connect, $sql);
-
-    return (mysqli_num_rows($result) == 0) ? [] : mysqli_fetch_all($result, MYSQLI_ASSOC);
-}
 
 function getDefaultEvents()
 {
@@ -138,6 +151,12 @@ function getUpcomingEvents($events, $numDays = 7)
 }
 
 
+function isPastEvent($eventDate)
+{
+    return $eventDate < getCurrentDate();
+}
+
+
 function getPastEventsWithImages($events)
 {
     $pastEventImages = [];
@@ -159,252 +178,54 @@ function getPastEventsWithImages($events)
     return $pastEventImages;
 }
 
-function createEvent($name, $description, $date, $time, $image)
+
+function getAll($tableName)
 {
     global $connect;
+    $sql = "SELECT * FROM $tableName";
+    $result = mysqli_query($connect, $sql);
 
-
-    $name = cleanInput($name, $connect);
-    $description = cleanInput($description, $connect);
-    $date = cleanInput($date, $connect);
-    $time = cleanInput($time, $connect);
-    $image = cleanInput($image, $connect);
-
-    $sql = "INSERT INTO events (name, description, date, time, image, created_at) 
-            VALUES ('$name', '$description', '$date', '$time', '$image', NOW())";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
+    return (mysqli_num_rows($result) == 0) ? [] : mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
-function deleteEvent($eventId)
+function showDetailsPage($tableName, $id)
 {
     global $connect;
+    $sql = "SELECT * FROM $tableName WHERE id = $id";
+    $result = mysqli_query($connect, $sql);
 
-    $eventId = cleanInput($eventId, $connect);
-    $sql = "DELETE FROM events WHERE id = $eventId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
+    return (mysqli_num_rows($result) > 0) ? mysqli_fetch_assoc($result) : null;
 }
 
-function updateEvent($eventId, $name, $description, $date, $time, $image)
+
+function insertRecord($table, $data)
 {
     global $connect;
+    $fields = implode(", ", array_keys($data));
+    $values = implode(", ", array_map(function ($value) use ($connect) {
+        return "'" . mysqli_real_escape_string($connect, $value) . "'";
+    }, array_values($data)));
 
-
-    $eventId = cleanInput($eventId, $connect);
-    $name = cleanInput($name, $connect);
-    $description = cleanInput($description, $connect);
-    $date = cleanInput($date, $connect);
-    $time = cleanInput($time, $connect);
-    $image = cleanInput($image, $connect);
-
-    $sql = "UPDATE events 
-            SET name = '$name', description = '$description', date = '$date', time = '$time', image = '$image' 
-            WHERE id = $eventId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
+    $sql = "INSERT INTO $table ($fields) VALUES ($values)";
+    return mysqli_query($connect, $sql);
 }
 
-function createMenuItem($item_name, $description, $price, $category)
+function updateRecord($table, $data, $id)
 {
     global $connect;
-
-
-    $item_name = cleanInput($item_name, $connect);
-    $description = cleanInput($description, $connect);
-    $price = cleanInput($price, $connect);
-    $category = cleanInput($category, $connect);
-
-    $sql = "INSERT INTO menus (item_name, description, price, category, created_at) 
-            VALUES ('$item_name', '$description', $price, '$category', NOW())";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
+    $set = [];
+    foreach ($data as $key => $value) {
+        $set[] = "$key = '" . mysqli_real_escape_string($connect, $value) . "'";
     }
+    $setString = implode(", ", $set);
+
+    $sql = "UPDATE $table SET $setString WHERE id = $id";
+    return mysqli_query($connect, $sql);
 }
 
-function deleteMenuItem($menuId)
+function deleteRecord($table, $id)
 {
     global $connect;
-
-    $menuId = cleanInput($menuId, $connect);
-    $sql = "DELETE FROM menus WHERE id = $menuId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function updateMenuItem($menuId, $item_name, $description, $price, $category)
-{
-    global $connect;
-
-
-    $menuId = cleanInput($menuId, $connect);
-    $item_name = cleanInput($item_name, $connect);
-    $description = cleanInput($description, $connect);
-    $price = cleanInput($price, $connect);
-    $category = cleanInput($category, $connect);
-
-    $sql = "UPDATE menus 
-            SET item_name = '$item_name', description = '$description', price = $price, category = '$category' 
-            WHERE id = $menuId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function createReservation($customer_name, $customer_email, $phone_number, $date, $time, $number_of_people, $event_id, $special_requests)
-{
-    global $connect;
-
-
-    $customer_name = cleanInput($customer_name, $connect);
-    $customer_email = cleanInput($customer_email, $connect);
-    $phone_number = cleanInput($phone_number, $connect);
-    $date = cleanInput($date, $connect);
-    $time = cleanInput($time, $connect);
-    $number_of_people = cleanInput($number_of_people, $connect);
-    $special_requests = cleanInput($special_requests, $connect);
-
-
-    if (empty($event_id)) {
-        $event_id = 'NULL';
-    } else {
-        $event_id = cleanInput($event_id, $connect);
-    }
-
-
-    $sql = "INSERT INTO reservations (customer_name, customer_email, phone_number, date, time, number_of_people, event_id, special_requests, created_at) 
-            VALUES ('$customer_name', '$customer_email', '$phone_number', '$date', '$time', $number_of_people, $event_id, '$special_requests', NOW())";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function deleteReservation($reservationId)
-{
-    global $connect;
-
-    $reservationId = cleanInput($reservationId, $connect);
-    $sql = "DELETE FROM reservations WHERE id = $reservationId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function updateReservation($reservationId, $customer_name, $customer_email, $phone_number, $date, $time, $number_of_people, $event_id, $special_requests)
-{
-    global $connect;
-
-
-    $reservationId = cleanInput($reservationId, $connect);
-    $customer_name = cleanInput($customer_name, $connect);
-    $customer_email = cleanInput($customer_email, $connect);
-    $phone_number = cleanInput($phone_number, $connect);
-    $date = cleanInput($date, $connect);
-    $time = cleanInput($time, $connect);
-    $number_of_people = cleanInput($number_of_people, $connect);
-    $special_requests = cleanInput($special_requests, $connect);
-
-
-    if (empty($event_id)) {
-        $event_id = 'NULL';
-    } else {
-        $event_id = cleanInput($event_id, $connect);
-    }
-
-
-    $sql = "UPDATE reservations 
-            SET customer_name = '$customer_name', customer_email = '$customer_email', phone_number = '$phone_number', 
-            date = '$date', time = '$time', number_of_people = $number_of_people, event_id = $event_id, special_requests = '$special_requests' 
-            WHERE id = $reservationId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function deleteUser($userId)
-{
-    global $connect;
-
-    $userId = cleanInput($userId, $connect);
-    $sql = "DELETE FROM users WHERE id = $userId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function createUser($username, $email, $password, $role)
-{
-    global $connect;
-
-
-    $username = cleanInput($username, $connect);
-    $email = cleanInput($email, $connect);
-    $password = cleanInput($password, $connect);
-    $role = cleanInput($role, $connect);
-
-
-    $hashed_password = hash("sha256", $password);
-
-
-    $sql = "INSERT INTO users (username, email, password_hash, role, created_at) 
-            VALUES ('$username', '$email', '$hashed_password', '$role', NOW())";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function updateUser($userId, $username, $email, $role)
-{
-    global $connect;
-
-
-    $userId = cleanInput($userId, $connect);
-    $username = cleanInput($username, $connect);
-    $email = cleanInput($email, $connect);
-    $role = cleanInput($role, $connect);
-
-    $sql = "UPDATE users SET username = '$username', email = '$email', role = '$role' WHERE id = $userId";
-
-    if (mysqli_query($connect, $sql)) {
-        return true;
-    } else {
-        return false;
-    }
+    $sql = "DELETE FROM $table WHERE id = " . intval($id);
+    return mysqli_query($connect, $sql);
 }

@@ -7,16 +7,15 @@ if (!isset($_SESSION['admin'])) {
     header("Location: /admin/login/login.php");
     exit();
 }
+
 $query = "SELECT COUNT(*) AS unread_count FROM contact_messages WHERE is_read = 0";
 $result = mysqli_query($connect, $query);
 $unreadCount = mysqli_fetch_assoc($result)['unread_count'];
-
 
 $users = getAll('users');
 $events = getAll('events');
 $reservations = getAll('reservations');
 $menus = getAll('menus');
-
 ?>
 
 <!DOCTYPE html>
@@ -26,9 +25,7 @@ $menus = getAll('menus');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="../components/hero.css">
     <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="../components/footer.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@200..900&display=swap" rel="stylesheet">
@@ -36,7 +33,7 @@ $menus = getAll('menus');
     <title>The Church International</title>
 </head>
 
-<?php include "../components/hero.php" ?>
+<?php include "../components/hero.php"; ?>
 
 <body>
     <div class="dashboard-container">
@@ -52,7 +49,6 @@ $menus = getAll('menus');
             </ul>
         </div>
 
-
         <div class="content-area">
             <h2>Admin Dashboard</h2>
             <a href='/admin/login/logout.php?logout=true' class='btn'>Logout</a>
@@ -61,7 +57,6 @@ $menus = getAll('menus');
             <?php if ($unreadCount > 0): ?>
                 <span class="unread-bubble"><?= $unreadCount ?></span>
             <?php endif; ?>
-
 
             <section id="users-section" class="crud-section">
                 <div class="section-header">
@@ -86,15 +81,14 @@ $menus = getAll('menus');
                                 <td><?= $user['email'] ?></td>
                                 <td><?= $user['role'] ?></td>
                                 <td>
-                                    <a class="crd-btn-edit" href="crud/edit_user.php?id=<?= $user['id'] ?>">Edit</a>
-                                    <a class="crd-btn-delete" href="crud/delete_user.php?id=<?= $user['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                                    <a class="crd-btn-edit" href="crud/edit_record.php?table=users&id=<?= $user['id'] ?>">Edit</a>
+                                    <a class="crd-btn-delete" href="crud/delete_record.php?table=users&id=<?= $user['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </section>
-
 
             <section id="events-section" class="crud-section hidden">
                 <div class="section-header">
@@ -121,14 +115,15 @@ $menus = getAll('menus');
                                 <td><?= $event['date'] ?></td>
                                 <td><?= $event['time'] ?></td>
                                 <td>
-                                    <a class="crd-btn-edit" href="crud/edit_event.php?id=<?= $event['id'] ?>">Edit</a>
-                                    <a class="crd-btn-delete" href="crud/delete_event.php?id=<?= $event['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                                    <a class="crd-btn-edit" href="crud/edit_record.php?table=events&id=<?= $event['id'] ?>">Edit</a>
+                                    <a class="crd-btn-delete" href="crud/delete_record.php?table=events&id=<?= $event['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </section>
+
             <section id="reservations-section" class="crud-section hidden">
                 <div class="section-header">
                     <h2>Manage Reservations</h2>
@@ -154,14 +149,15 @@ $menus = getAll('menus');
                                 <td><?= $reservation['date'] ?></td>
                                 <td><?= $reservation['time'] ?></td>
                                 <td>
-                                    <a class="crd-btn-edit" href="crud/edit_reservation.php?id=<?= $reservation['id'] ?>">Edit</a>
-                                    <a class="crd-btn-delete" href="crud/delete_reservation.php?id=<?= $reservation['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                                    <a class="crd-btn-edit" href="crud/edit_record.php?table=reservations&id=<?= $reservation['id'] ?>">Edit</a>
+                                    <a class="crd-btn-delete" href="crud/delete_record.php?table=reservations&id=<?= $reservation['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </section>
+
             <section id="menu-section" class="crud-section hidden">
                 <div class="section-header">
                     <h2>Manage Menu Items</h2>
@@ -187,61 +183,61 @@ $menus = getAll('menus');
                                 <td><?= $menu['price'] ?></td>
                                 <td><?= $menu['category'] ?></td>
                                 <td>
-                                    <a class="crd-btn-edit" href="crud/edit_menu.php?id=<?= $menu['id'] ?>">Edit</a>
-                                    <a class="crd-btn-delete" href="crud/delete_menu.php?id=<?= $menu['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                                    <a class="crd-btn-edit" href="crud/edit_record.php?table=menus&id=<?= $menu['id'] ?>">Edit</a>
+                                    <a class="crd-btn-delete" href="crud/delete_record.php?table=menus&id=<?= $menu['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </section>
+
             <section id="gallery-section" class="crud-section hidden">
                 <!-- Gallery management will go here -->
             </section>
+
             <section id="reviews-section" class="crud-section hidden">
                 <!-- Reviews management will go here -->
             </section>
         </div>
     </div>
 
-
-
     <div id="user-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="user-modal">&times;</span>
             <h3>Create New User</h3>
-            <form action="crud/create_user.php" method="POST" class="crud-form">
+            <form action="crud/create_record.php" method="POST" class="crud-form">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <input type="text" name="role" placeholder="Role (e.g., admin, staff)" required>
+                <input type="hidden" name="table" value="user">
                 <input type="submit" value="Create User" name="create_user">
             </form>
         </div>
     </div>
 
-
     <div id="event-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="event-modal">&times;</span>
             <h3>Create New Event</h3>
-            <form action="crud/create_event.php" method="POST" class="crud-form" enctype="multipart/form-data">
+            <form action="crud/create_record.php" method="POST" class="crud-form" enctype="multipart/form-data">
                 <input type="text" name="name" placeholder="Event Name" required>
                 <textarea name="description" placeholder="Description" required></textarea>
                 <input type="date" name="date" required>
                 <input type="time" name="time" required>
                 <input type="file" name="event_images[]" accept="image/*" multiple required>
+                <input type="hidden" name="table" value="event">
                 <input type="submit" value="Create Event" name="create_event">
             </form>
         </div>
     </div>
 
-
     <div id="reservation-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="reservation-modal">&times;</span>
             <h3>Create New Reservation</h3>
-            <form action="crud/create_reservation.php" method="POST" class="crud-form">
+            <form action="crud/create_record.php" method="POST" class="crud-form">
                 <input type="text" name="customer_name" placeholder="Customer Name" required>
                 <input type="email" name="customer_email" placeholder="Customer Email" required>
                 <input type="tel" name="phone_number" placeholder="Phone Number" required>
@@ -249,29 +245,29 @@ $menus = getAll('menus');
                 <input type="time" name="time" required>
                 <input type="number" name="number_of_people" placeholder="Number of People" required>
                 <input type="text" name="special_requests" placeholder="Special Requests">
+                <input type="hidden" name="table" value="reservation">
                 <input type="submit" value="Create Reservation" name="create_reservation">
             </form>
         </div>
     </div>
 
-
     <div id="menu-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="menu-modal">&times;</span>
             <h3>Create New Menu Item</h3>
-            <form action="crud/create_menu.php" method="POST" class="crud-form">
+            <form action="crud/create_record.php" method="POST" class="crud-form">
                 <input type="text" name="item_name" placeholder="Item Name" required>
                 <textarea name="description" placeholder="Description" required></textarea>
                 <input type="number" name="price" step="0.01" placeholder="Price" required>
                 <input type="text" name="category" placeholder="Category (e.g., food, drinks)" required>
+                <input type="hidden" name="table" value="menu">
                 <input type="submit" value="Create Menu Item" name="create_menu">
             </form>
         </div>
     </div>
 
-
     <script src="../main.js"></script>
 </body>
-<?php include "../components/footer.php" ?>
+<?php include "../components/footer.php"; ?>
 
 </html>

@@ -25,9 +25,6 @@ $firstImage = getFirstImage($customEventDetails['image']);
 $eventImages = getEventImages($customEventDetails['image']);
 
 
-$isPastEvent = ($customEventDetails['date'] < getCurrentDate());
-
-
 $eventTime = isset($customEventDetails['time']) && !empty($customEventDetails['time']) ? date('h:i A', strtotime($customEventDetails['time'])) : 'Time not set';
 ?>
 
@@ -60,7 +57,7 @@ $eventTime = isset($customEventDetails['time']) && !empty($customEventDetails['t
         </div>
 
 
-        <?php if ($isPastEvent) : ?>
+        <?php if (isPastEvent($customEventDetails['date'])) : ?>
             <div class="past-event-section">
                 <h2>Photos from the Event</h2>
                 <div class="photo-gallery">
