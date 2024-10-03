@@ -1,13 +1,12 @@
+/* programm css*/
+
 .program-event-time {
-  font-size: 1.2rem;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.6),
     0 0 8px rgba(255, 255, 255, 0.4), 0 0 15px rgba(173, 216, 230, 0.5),
     0 0 20px rgba(173, 216, 230, 0.5);
 }
 
 .program-event-card p {
-  margin: 0;
-  padding: 0;
   background-color: rgba(0, 0, 0, 0.7);
 }
 
@@ -33,7 +32,6 @@
   border-radius: 5px;
   background-size: cover;
   background-position: center;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -44,28 +42,9 @@
   transform: scale(1.05);
 }
 
-.event-details {
-  text-align: center;
-  position: relative;
-}
-
-.program-event-name {
-  font-size: 1.2rem;
-}
-
 .book-button {
-  display: block;
   width: 100%;
-  padding: 10px;
-  text-align: center;
   background-color: #28a74683;
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 0 0 5px 5px;
-  transition: background-color 0.3s ease;
 }
 
-.book-button:hover {
-  background-color: #218837d1;
-}
+/*program css END */

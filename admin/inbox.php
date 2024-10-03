@@ -20,7 +20,7 @@ $messages = getAll('contact_messages');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="/styles/style.css">
     <link rel="stylesheet" href="inbox.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,9 +30,9 @@ $messages = getAll('contact_messages');
 </head>
 <?php include "../components/hero.php"; ?>
 
-<body>
+<body class="body">
     <div class="inbox-container">
-        <h1>Inbox - Contact Messages</h1>
+        <h3>Inbox - Contact Messages</h3>
 
         <?php if (!empty($messages)) : ?>
             <table class="inbox-table">

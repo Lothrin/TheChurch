@@ -57,7 +57,7 @@ $stmt->execute();
 
 <body>
     <div class="message-container">
-        <h1>Message from <?= htmlspecialchars($message['name']) ?></h1>
+        <h3>Message from <?= htmlspecialchars($message['name']) ?></h3>
         <p><strong>Email:</strong> <?= htmlspecialchars($message['email']) ?></p>
         <p><strong>Phone:</strong> <?= htmlspecialchars($message['phone_number']) ?></p>
         <p><strong>Received at:</strong> <?= date('F j, Y h:i A', strtotime($message['created_at'])) ?></p>

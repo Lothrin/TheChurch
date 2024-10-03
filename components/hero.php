@@ -1,19 +1,19 @@
-<div class="hero">
-    <div class="divthechurch">
+<div class="hero-container">
+    <div class="hero">
         <a href="/home.php">
             <h1 class="thechurch">The Church</h1>
         </a>
-        <h5> International Pub </h5>
+        <h3> International Pub </h3>
         <br>
 
     </div>
-    <div>
-        <a href="/reserve.php" class="nav">RESERVE</a>
-        <a href="/events.php" class="nav">EVENTS</a>
-        <a href="/contact.php" class="nav">CONTACT</a>
-        <a href="/gallery.php" class="nav">GALLERY</a>
-        <a class="nav">MENU</a>
-        <a class="nav">ABOUT</a>
+    <div class="nav-buttons">
+        <a href="/reserve.php" class="nav-link">RESERVE</a>
+        <a href="/events.php" class="nav-link">EVENTS</a>
+        <a href="/contact.php" class="nav-link">CONTACT</a>
+        <a href="/gallery.php" class="nav-link">GALLERY</a>
+        <a class="nav-link">MENU</a>
+        <a class="nav-link">ABOUT</a>
     </div>
 
 </div>

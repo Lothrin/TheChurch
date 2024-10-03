@@ -130,7 +130,7 @@ if (isset($_GET['table']) && isset($_GET['id'])) {
 
 <body>
     <div class="container">
-        <h1>Edit <?= ucfirst($table) ?></h1>
+        <h3>Edit <?= ucfirst($table) ?></h3>
         <form method="POST" class="crud-form" enctype="multipart/form-data">
 
             <?php if ($table === 'events'): ?>
